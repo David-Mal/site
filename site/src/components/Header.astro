@@ -1,0 +1,18 @@
+---
+const links = [
+  { href: '/#about', label: 'About' },
+  { href: '/#work', label: 'Work' },
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#posts', label: 'Posts' },
+  { href: '/#online', label: 'Online' },
+];
+---
+
+<header class="site-header" data-header>
+  <a class="brand" href="/">DAVID MALUTAN</a>
+  <nav aria-label="Main">
+    <ul>
+      {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+    </ul>
+  </nav>
+</header>

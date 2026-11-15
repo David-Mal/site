@@ -1,0 +1,138 @@
+---
+import { site } from '../data/site';
+---
+
+<div class="term" data-terminal data-mail-r={site.mailReversed} data-cv={site.cv} hidden role="dialog" aria-modal="true" aria-label="Terminal">
+  <div class="term-win">
+    <div class="term-bar">
+      <span>david@site: ~</span>
+      <button type="button" data-terminal-close aria-label="Close terminal">×</button>
+    </div>
+    <div class="term-out" data-term-out aria-live="polite"></div>
+    <form class="term-line" data-term-form>
+      <label for="term-in">david@site:~$</label>
+      <input id="term-in" autocomplete="off" spellcheck="false" autocapitalize="off" />
+    </form>
+  </div>
+</div>
+
+<script>
+  // A tiny easter-egg shell. Open with the ` key, close with Esc.
+  const term = document.querySelector<HTMLElement>('[data-terminal]');
+  const out = term?.querySelector<HTMLElement>('[data-term-out]');
+  const form = term?.querySelector<HTMLFormElement>('[data-term-form]');
+  const input = term?.querySelector<HTMLInputElement>('#term-in');
+  const email = (term?.dataset.mailR ?? '').split('').reverse().join('');
+  let lastFocus: Element | null = null;
+
+  const print = (lines: string[], cls = '') =>
+    lines.forEach((l) => {
+      const div = document.createElement('div');
+      if (cls) div.className = cls;
+      div.textContent = l;
+      out?.appendChild(div);
+    });
+
+  const open = () => {
+    if (!term) return;
+    lastFocus = document.activeElement;
+    term.hidden = false;
+    if (!out?.childElementCount) print(['DM-TOY shell v1.0. Type "help".', '']);
+    input?.focus();
+  };
+  const close = () => {
+    if (!term) return;
+    term.hidden = true;
+    (lastFocus as HTMLElement | null)?.focus?.();
+  };
+  const go = (href: string) => {
+    close();
+    location.href = href;
+    return [];
+  };
+
+  const commands: Record<string, () => string[]> = {
+    help: () => [
+      'about     who is david',
+      'work      experience and achievements',
+      'projects  things he built',
+      'posts     writing',
+      'online    where to find him',
+      'cv        download the cv',
+      'now       what he is doing now',
+      'theme     switch night/day',
+      'clear     clear the screen',
+      'exit      close the terminal',
+    ],
+    about: () => go('/#about'),
+    work: () => go('/#work'),
+    projects: () => go('/#projects'),
+    posts: () => go('/#posts'),
+    online: () => go('/#online'),
+    now: () => go('/now'),
+    cv: () => {
+      const a = document.createElement('a');
+      a.href = term?.dataset.cv ?? '/cv';
+      a.download = '';
+      a.click();
+      return ['downloading cv...'];
+    },
+    theme: () => {
+      window.__toggleTheme();
+      return [`theme: ${document.documentElement.dataset.theme}`];
+    },
+    ls: () => ['about  work  projects  posts  online  cv.pdf  now.md'],
+    whoami: () => ['guest. david would like to meet you, though.'],
+    clear: () => {
+      if (out) out.innerHTML = '';
+      return [];
+    },
+    exit: () => {
+      close();
+      return [];
+    },
+  };
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!input) return;
+    const cmd = input.value.trim();
+    input.value = '';
+    print([`$ ${cmd}`], 'cmd');
+    if (!cmd) return;
+    if (cmd === 'sudo hire-david') {
+      print(['[sudo] permission granted.', 'opening a line to david...']);
+      const a = document.createElement('a');
+      a.href = `mailto:${email}`;
+      a.textContent = email;
+      const div = document.createElement('div');
+      div.appendChild(a);
+      out?.appendChild(div);
+    } else if (cmd.startsWith('sudo')) {
+      print(['nice try. (hint: sudo hire-david)']);
+    } else if (commands[cmd]) {
+      print(commands[cmd]());
+    } else {
+      print([`command not found: ${cmd}. type "help".`]);
+    }
+    if (out) out.scrollTop = out.scrollHeight;
+  });
+
+  const isTyping = (el: EventTarget | null) =>
+    el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || (el as HTMLElement | null)?.isContentEditable;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '`' && !isTyping(e.target)) {
+      e.preventDefault();
+      term?.hidden ? open() : close();
+    } else if (e.key === 'Escape' && term && !term.hidden) {
+      close();
+    }
+  });
+
+  document.querySelectorAll('[data-terminal-open]').forEach((b) => b.addEventListener('click', open));
+  term?.querySelector('[data-terminal-close]')?.addEventListener('click', close);
+  term?.addEventListener('click', (e) => {
+    if (e.target === term) close();
+  });
+</script>

@@ -1,0 +1,20 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectRow from '../ProjectRow.astro';
+
+interface Props {
+  standalone?: boolean;
+}
+const { standalone = false } = Astro.props;
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order || b.data.year - a.data.year
+);
+const Heading = standalone ? 'h1' : 'h2';
+---
+
+<section class="section" id="projects">
+  <Heading class="label">Projects</Heading>
+  <div>
+    {projects.map((p) => <ProjectRow project={p} />)}
+  </div>
+</section>

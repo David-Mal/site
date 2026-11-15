@@ -1,0 +1,45 @@
+---
+import { site } from '../../data/site';
+
+interface Props {
+  standalone?: boolean;
+}
+const { standalone = false } = Astro.props;
+const Heading = standalone ? 'h1' : 'h2';
+---
+
+<section class="section" id="online">
+  <Heading class="label">Online</Heading>
+  <div>
+    <article class="row">
+      <div class="row-hd">
+        <a class="t" href={site.github} target="_blank" rel="noopener me">GitHub ↗</a>
+        <span class="y">David-Mal</span>
+      </div>
+    </article>
+    <article class="row">
+      <div class="row-hd">
+        <a class="t" href={site.linkedin} target="_blank" rel="noopener me">LinkedIn ↗</a>
+        <span class="y">in/david-mal</span>
+      </div>
+    </article>
+    <article class="row">
+      <div class="row-hd">
+        <a class="t" href="/#online" data-mail={site.mailReversed}>Email</a>
+        <span class="y"><a href="/#online" data-mail={site.mailReversed} data-mail-show>enable JavaScript to see it</a></span>
+      </div>
+    </article>
+    <article class="row">
+      <div class="row-hd">
+        <a class="t" href="/cv">CV</a>
+        <span class="y"><a href={site.cv} download>PDF</a></span>
+      </div>
+    </article>
+    <article class="row">
+      <div class="row-hd">
+        <a class="t" href="/rss.xml">RSS</a>
+        <span class="y">posts feed</span>
+      </div>
+    </article>
+  </div>
+</section>

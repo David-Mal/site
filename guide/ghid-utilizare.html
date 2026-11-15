@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<title>Ghid de utilizare: site-ul personal</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #1c1a16; }
+  h1 { font-size: 26pt; margin: 0 0 4px; }
+  h2 { font-size: 15pt; margin: 26px 0 8px; padding-top: 10px; border-top: 2px solid #ffb454; break-after: avoid; }
+  h3 { font-size: 12pt; margin: 16px 0 6px; break-after: avoid; }
+  p, li { margin: 4px 0; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 9.5pt; background: #f2ede4; padding: 1px 4px; border-radius: 3px; }
+  pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: 9pt; background: #0f1219; color: #e3e8ff; padding: 10px 12px; border-radius: 6px; white-space: pre-wrap; break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; font-size: 10pt; margin: 6px 0; }
+  td, th { border: 1px solid #ddd3c2; padding: 4px 8px; text-align: left; vertical-align: top; }
+  th { background: #f4ede2; }
+  img { max-width: 100%; border: 1px solid #ddd3c2; border-radius: 6px; }
+  figure { margin: 10px 0; break-inside: avoid; }
+  figcaption { font-size: 9pt; color: #6b6456; }
+  .cover { background: #0f1219; color: #e8e3d8; padding: 28px; border-radius: 10px; margin-bottom: 16px; }
+  .cover .k { font-family: Consolas, monospace; color: #ffb454; letter-spacing: .15em; font-size: 9pt; }
+  .warn { background: #fff4e0; border-left: 4px solid #c47512; padding: 8px 12px; margin: 10px 0; break-inside: avoid; }
+  .tip { background: #eef3ff; border-left: 4px solid #3b4ec8; padding: 8px 12px; margin: 10px 0; break-inside: avoid; }
+  .pb { break-before: page; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="k">GHID DE UTILIZARE</div>
+  <h1>Site-ul tău personal</h1>
+  <p>Cum îl rulezi, cum publici articole și proiecte, cum îl pui online pe Cloudflare Pages și cum rezolvi erorile frecvente.</p>
+</div>
+
+<figure>
+  <img src="img/home-dark.jpg" alt="Pagina principală în tema dark">
+  <figcaption>Pagina principală, tema dark (implicită). Fiecare obiect din cameră e un link.</figcaption>
+</figure>
+
+<h2>1. Ce conține proiectul</h2>
+<p>Site-ul e făcut cu <b>Astro</b>: scrii conținut în fișiere Markdown (<code>.md</code>), iar Astro le transformă în pagini HTML. Nu există bază de date sau panou de admin. Tot ce schimbi e un fișier text.</p>
+<table>
+  <tr><th>Ce vrei să schimbi</th><th>Fișierul</th></tr>
+  <tr><td>Articole</td><td><code>src/content/posts/</code> (un fișier per articol)</td></tr>
+  <tr><td>Proiecte</td><td><code>src/content/projects/</code> (un fișier per proiect)</td></tr>
+  <tr><td>Textul din About</td><td><code>src/content/pages/about.md</code></td></tr>
+  <tr><td>Pagina Now</td><td><code>src/content/pages/now.md</code></td></tr>
+  <tr><td>Work, realizări, linkuri, programul de pe monitor</td><td><code>src/data/site.ts</code></td></tr>
+  <tr><td>Culorile temelor dark/light</td><td><code>src/styles/tokens.css</code></td></tr>
+  <tr><td>Poza din ramă</td><td><code>public/img/me.webp</code></td></tr>
+  <tr><td>CV-ul descărcabil</td><td><code>public/cv/David_Malutan_CV.pdf</code></td></tr>
+  <tr><td>Videouri pentru proiecte</td><td><code>public/videos/</code></td></tr>
+</table>
+
+<h2>2. Rulează site-ul pe calculatorul tău</h2>
+<p>Ai nevoie de <b>Node.js</b> (îl ai deja instalat). Deschide un terminal în folderul <code>site</code>:</p>
+<pre>npm install      # o singură dată, instalează pachetele
+npm run dev      # pornește site-ul local</pre>
+<p>Deschide <code>http://localhost:4321</code> în browser. Cât timp rulează <code>npm run dev</code>, orice fișier salvat se vede imediat în pagină. Oprești serverul cu <code>Ctrl + C</code>.</p>
+<p>Înainte de publicare, verifică build-ul de producție:</p>
+<pre>npm run build    # dacă apare o eroare aici, nu publica încă</pre>
+
+<h2 class="pb">3. Publică un articol nou</h2>
+<h3>Pasul 1: creează fișierul</h3>
+<p>În <code>src/content/posts/</code> creează un fișier cu numele articolului, fără spații, de exemplu <code>primul-meu-hackathon.md</code>. Numele fișierului devine adresa: <code>/posts/primul-meu-hackathon</code>.</p>
+<h3>Pasul 2: scrie antetul (frontmatter) și textul</h3>
+<pre>---
+title: What I learned at Cluj Hackathon
+date: 2026-11-20
+description: 48 hours, one parking app and a pitch.
+draft: false
+---
+
+Primul paragraf al articolului.
+
+## Un subtitlu
+
+Text **îngroșat**, *italic*, [un link](https://exemplu.com) și `cod`.</pre>
+<table>
+  <tr><th>Câmp</th><th>Ce înseamnă</th></tr>
+  <tr><td><code>title</code></td><td>Titlul afișat în listă și pe pagină.</td></tr>
+  <tr><td><code>date</code></td><td>Data, obligatoriu în formatul <code>AAAA-LL-ZZ</code>. Articolele se ordonează după ea.</td></tr>
+  <tr><td><code>description</code></td><td>O frază scurtă, apare sub titlu și în RSS.</td></tr>
+  <tr><td><code>draft</code></td><td><code>true</code> = ascuns de pe site (ciornă). <code>false</code> = publicat.</td></tr>
+</table>
+<h3>Pasul 3: publică</h3>
+<pre>git add .
+git commit -m "Post: What I learned at Cluj Hackathon"
+git push</pre>
+<p>Cloudflare reconstruiește site-ul automat. Articolul apare online în 1–2 minute.</p>
+<div class="tip"><b>Imagini în articol:</b> pune imaginea în <code>public/img/</code> și scrie în articol <code>![descriere](/img/numele-imaginii.webp)</code>.</div>
+
+<h2>4. Adaugă un proiect</h2>
+<p>Creează un fișier în <code>src/content/projects/</code>. Câmpul <code>status</code> decide ce se întâmplă la click:</p>
+<table>
+  <tr><th><code>status</code></th><th>Comportament</th></tr>
+  <tr><td><code>live</code></td><td>Titlul deschide site-ul publicat (câmpul <code>url</code>) într-un tab nou.</td></tr>
+  <tr><td><code>demo</code></td><td>Cu <code>video</code>: titlul deschide videoul într-o fereastră. Fără video: eticheta „Video coming soon”.</td></tr>
+  <tr><td><code>soon</code></td><td>Eticheta „Coming soon”, fără link.</td></tr>
+</table>
+<h3>Exemplu: proiect publicat</h3>
+<pre>---
+title: Momentifly
+short: MOMENTIFLY          # textul de pe cotorul cărții din scenă
+year: 2026
+description: Time management meets wellness.
+stack: [Angular, Spring Boot, PostgreSQL]
+status: live
+url: https://adresa-ta.com
+repo: https://github.com/David-Mal/momentifly   # opțional
+order: 1                   # poziția în listă (1 = primul)
+---</pre>
+<h3>Exemplu: proiect cu video</h3>
+<pre>---
+title: Airplanes
+short: AIRPLANES
+year: 2024
+description: The pen-and-paper game against a min-max AI.
+stack: [Python]
+status: demo
+video: /videos/airplanes.mp4
+poster: /videos/airplanes.webp
+order: 6
+---</pre>
+<div class="tip">Fiecare proiect apare automat ca o carte în teancul de pe birou. Cu mai mult de 7 proiecte teancul devine prea înalt: păstrează acolo doar ce vrei să arăți primul.</div>
+
+<figure>
+  <img src="img/projects-light.jpg" alt="Pagina de proiecte în tema light">
+  <figcaption>Lista de proiecte în tema light: „Coming soon”, link live cu notă, „Video coming soon”.</figcaption>
+</figure>
+
+<h2 class="pb">5. Înregistrează și comprimă un video</h2>
+<ol>
+  <li>Scrie întâi 3–4 pași pe care îi arăți (pornești aplicația, 2–3 acțiuni care arată ce poate).</li>
+  <li>Înregistrează 15–30 de secunde, fără sunet, în 1080p. Pe Windows: <code>Win + G</code> (Game Bar) sau OBS. Ascunde notificările și taburile personale.</li>
+  <li>Comprimă clipul (ai deja ffmpeg instalat):</li>
+</ol>
+<pre>ffmpeg -i clip.mp4 -vf "scale=1280:-2,fps=24" -an -c:v libx264 -crf 28 -preset slow -movflags +faststart airplanes.mp4</pre>
+<p>Imaginea de previzualizare (posterul), din secunda 3:</p>
+<pre>ffmpeg -i clip.mp4 -ss 00:00:03 -frames:v 1 airplanes.webp</pre>
+<p>Copiază ambele fișiere în <code>public/videos/</code>, completează <code>video</code> și <code>poster</code> în fișierul proiectului, apoi publică (pasul 3 de la articole).</p>
+<div class="warn">Ține fiecare video sub ~3 MB. Dacă iese mai mare, crește <code>-crf</code> la 30–32 sau scurtează clipul.</div>
+
+<h2>6. Schimbă textul, poza și alte detalii</h2>
+<ul>
+  <li><b>Fraza personală și About:</b> editezi <code>src/content/pages/about.md</code>. Primul paragraf apare mare, ca titlu.</li>
+  <li><b>Pagina Now:</b> <code>src/content/pages/now.md</code>. Schimbă și data din <code>updated</code>.</li>
+  <li><b>Work, realizări, GitHub, LinkedIn, e-mail:</b> <code>src/data/site.ts</code>. E-mailul e scris <i>invers</i> în câmpul <code>mailReversed</code>, ca să nu-l găsească boții de spam.</li>
+  <li><b>Programul de pe monitor:</b> lista <code>bootProgram</code> din <code>src/data/site.ts</code>. Maxim ~30 de caractere pe linie, ca să încapă pe ecran. Pune sintaxa reală a limbajului tău.</li>
+  <li><b>Poza din ramă:</b> înlocuiește <code>public/img/me.webp</code> cu o poză portret, cu același nume.</li>
+  <li><b>Culorile:</b> <code>src/styles/tokens.css</code>, separat pentru dark și light.</li>
+</ul>
+
+<h2>7. CV-ul</h2>
+<p>CV-ul public stă în <code>public/cv/David_Malutan_CV.pdf</code> și e folosit de butoanele „Download CV” și de pagina <code>/cv</code>. Versiunea de pe site nu conține numărul de telefon. Când îți actualizezi CV-ul, exportă o versiune nouă <b>fără telefon</b> și înlocuiește fișierul, păstrând exact același nume.</p>
+
+<h2 class="pb">8. Pune site-ul online pe Cloudflare Pages</h2>
+<ol>
+  <li><b>Creează întâi repository-ul pe GitHub:</b> github.com/new, nume <code>site</code>, <b>gol</b> (fără README, .gitignore sau licență). Abia apoi faci push, altfel apare eroarea „Repository not found”.</li>
+  <li>Din folderul proiectului (cel care conține <code>site/</code>):
+<pre>git init
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/David-Mal/site.git
+git push -u origin main</pre>
+  Fișierul <code>.gitignore</code> din rădăcină exclude deja materialele brute (videoul original etc.), iar <code>site/.gitignore</code> exclude <code>node_modules</code>.</li>
+  <li>Intră pe <b>dash.cloudflare.com</b> → <b>Workers &amp; Pages</b> → <b>Create</b> → <b>Pages</b> → <b>Connect to Git</b> și alege repository-ul.</li>
+  <li>La setări: <b>Framework preset</b> = Astro, <b>Root directory</b> = <code>site</code>, <b>Build command</b> = <code>npm run build</code>, <b>Build output directory</b> = <code>dist</code>. Apasă <b>Save and Deploy</b>.</li>
+  <li>După 1–2 minute primești o adresă de tipul <code>numele-tau.pages.dev</code>.</li>
+  <li>Scrie adresa finală în <code>astro.config.mjs</code> la <code>site:</code> (folosită pentru RSS, sitemap și previzualizări pe rețele sociale) și publică din nou.</li>
+</ol>
+<h3>Domeniu propriu (opțional)</h3>
+<p>Cumperi un domeniu (de exemplu din Cloudflare Registrar), apoi în proiectul Pages: <b>Custom domains</b> → <b>Set up a domain</b>. Certificatul HTTPS se face automat.</p>
+
+<h2>9. Funcții ascunse ale site-ului</h2>
+<ul>
+  <li><b>Lampa</b> sau butonul din colț comută între noapte (dark) și zi (light). Alegerea se păstrează la următoarea vizită.</li>
+  <li><b>Monitorul</b> „rulează” programul din <code>bootProgram</code> la prima vizită. Un click îl sare.</li>
+  <li><b>Avionul de hârtie</b> zboară la click. Al treilea click deschide proiectul Airplanes.</li>
+  <li><b>Tasta <code>`</code></b> deschide un terminal. Încearcă <code>help</code> și <code>sudo hire-david</code>.</li>
+</ul>
+<figure>
+  <img src="img/terminal.jpg" alt="Terminalul ascuns">
+  <figcaption>Terminalul ascuns, după comanda <code>sudo hire-david</code>.</figcaption>
+</figure>
+
+<h2 class="pb">10. Erori frecvente</h2>
+<table>
+  <tr><th>Mesaj / simptom</th><th>Cauză și rezolvare</th></tr>
+  <tr><td><code>InvalidContentEntryDataError</code> la build</td><td>Antetul unui fișier <code>.md</code> are o greșeală: lipsește un câmp obligatoriu, data nu e <code>AAAA-LL-ZZ</code>, sau <code>status</code> nu e <code>live</code>/<code>demo</code>/<code>soon</code>. Mesajul spune fișierul și câmpul.</td></tr>
+  <tr><td><code>url: Invalid url</code></td><td>Linkul trebuie să înceapă cu <code>https://</code>.</td></tr>
+  <tr><td>Articolul nu apare</td><td>Verifică <code>draft: false</code> și că fișierul e în <code>src/content/posts/</code> cu extensia <code>.md</code>.</td></tr>
+  <tr><td>Imaginea sau videoul nu se încarcă</td><td>Calea începe cu <code>/</code> și <i>nu</i> conține <code>public</code>: <code>/videos/x.mp4</code>, nu <code>public/videos/x.mp4</code>. Numele fișierelor sunt sensibile la litere mari.</td></tr>
+  <tr><td><code>Port 4321 is in use</code></td><td>Mai rulează un <code>npm run dev</code> în alt terminal. Oprește-l cu <code>Ctrl + C</code>.</td></tr>
+  <tr><td>Antetul are linii roșii în editor</td><td>Antetul trebuie să înceapă și să se termine cu <code>---</code>, iar listele se scriu <code>[A, B, C]</code>.</td></tr>
+  <tr><td>Estethis se încarcă greu</td><td>Normal: găzduirea gratuită Render „adoarme” serverul. Prima vizită poate dura un minut.</td></tr>
+  <tr><td>Build-ul eșuează pe Cloudflare, dar local merge</td><td>Verifică în Cloudflare că output-ul e <code>dist</code>. Dacă eroarea pomenește versiunea de Node, adaugă în setările proiectului variabila <code>NODE_VERSION</code> = <code>22</code>.</td></tr>
+</table>
+
+</body>
+</html>

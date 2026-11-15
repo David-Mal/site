@@ -1,0 +1,517 @@
+---
+// The desk at night. One hand-written SVG; every object is also a menu item.
+import { getCollection } from 'astro:content';
+import { bootProgram } from '../data/site';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+// Small seeded random generator so the skyline looks the same on every build.
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rnd = mulberry32(11);
+
+// Glass area of the window
+const G = { x: 210, y: 70, w: 1180, h: 500 };
+const ground = G.y + G.h;
+
+type Light = { x: number; y: number; flicker: boolean };
+const buildings: { x: number; w: number; h: number; lights: Light[] }[] = [];
+for (let x = G.x; x < G.x + G.w; ) {
+  const w = Math.min(Math.round(40 + rnd() * 66), G.x + G.w - x);
+  const h = Math.round(46 + rnd() * 150);
+  const lights: Light[] = [];
+  for (let wy = ground - h + 12; wy < ground - 10; wy += 16) {
+    for (let wx = x + 7; wx < x + w - 9; wx += 12) {
+      const v = rnd();
+      if (v < 0.3) lights.push({ x: wx, y: wy, flicker: v < 0.03 });
+    }
+  }
+  buildings.push({ x, w, h, lights });
+  x += w + Math.round(rnd() * 5);
+}
+
+const stars = Array.from({ length: 46 }, () => ({
+  x: G.x + rnd() * G.w,
+  y: G.y + 6 + rnd() * 250,
+  r: 0.6 + rnd() * 1.3,
+}));
+
+const drops = Array.from({ length: 70 }, () => ({
+  x: G.x + 20 + rnd() * (G.w - 20),
+  y: G.y + rnd() * (G.h - 60),
+  len: 10 + rnd() * 16,
+  delay: (rnd() * 1.4).toFixed(2),
+}));
+
+const bookColors = ['#b9503a', '#2f6f73', '#c7922f', '#3e4f8a', '#5f8547', '#7f4a73'];
+const books = projects.map((p, i) => ({
+  slug: p.id,
+  title: p.data.title,
+  label: p.data.short ?? p.data.title.toUpperCase(),
+  y: 690 - 30 * (i + 1),
+  x: 1126 + Math.round((rnd() - 0.5) * 26),
+  w: 232 + Math.round(rnd() * 34),
+  color: bookColors[i % bookColors.length],
+}));
+
+// Keyboard keys in front of the monitor
+const keys: { x: number; y: number; w: number }[] = [];
+for (let row = 0; row < 3; row++) {
+  for (let k = 0; k < 14; k++) keys.push({ x: 686 + k * 17.5 + (row % 2) * 6, y: 716 + row * 8, w: 14 });
+}
+---
+
+<section class="hero" aria-label="David's desk at night. Every object in the room is a link.">
+  <svg
+    id="scene"
+    viewBox="0 0 1600 900"
+    preserveAspectRatio="xMidYMid slice"
+    data-boot={JSON.stringify(bootProgram)}
+  >
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" style="stop-color: var(--sky-top)"></stop>
+        <stop offset="1" style="stop-color: var(--sky-bot)"></stop>
+      </linearGradient>
+      <radialGradient id="lampGlow">
+        <stop offset="0" stop-color="#ffb454" stop-opacity="0.5"></stop>
+        <stop offset="0.45" stop-color="#ffb454" stop-opacity="0.16"></stop>
+        <stop offset="1" stop-color="#ffb454" stop-opacity="0"></stop>
+      </radialGradient>
+      <radialGradient id="screenGlow" cx="0.5" cy="0.45" r="0.7">
+        <stop offset="0" stop-color="#5b6cf0"></stop>
+        <stop offset="1" stop-color="#2a3796"></stop>
+      </radialGradient>
+      <radialGradient id="crtSpill">
+        <stop offset="0" stop-color="#5468ff" stop-opacity="0.32"></stop>
+        <stop offset="1" stop-color="#5468ff" stop-opacity="0"></stop>
+      </radialGradient>
+      <radialGradient id="vignette" cx="0.5" cy="0.45" r="0.75">
+        <stop offset="0.55" stop-color="#000" stop-opacity="0"></stop>
+        <stop offset="1" stop-color="#000" stop-opacity="0.55"></stop>
+      </radialGradient>
+      <clipPath id="glass"><rect x={G.x} y={G.y} width={G.w} height={G.h}></rect></clipPath>
+      <clipPath id="screenClip"><rect x="664" y="354" width="282" height="206" rx="20"></rect></clipPath>
+      <pattern id="scan" width="4" height="3" patternUnits="userSpaceOnUse">
+        <rect width="4" height="1" fill="rgba(0,0,0,0.22)"></rect>
+      </pattern>
+      <filter id="sepia">
+        <feColorMatrix
+          type="matrix"
+          values="0.39 0.69 0.19 0 0.02  0.35 0.62 0.17 0 0.01  0.27 0.48 0.13 0 0  0 0 0 1 0"
+        ></feColorMatrix>
+      </filter>
+      <filter id="grain" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"></feTurbulence>
+        <feColorMatrix type="saturate" values="0"></feColorMatrix>
+      </filter>
+    </defs>
+
+    <rect width="1600" height="900" fill="var(--wall)"></rect>
+
+    <!-- ===== window (far layer) ===== -->
+    <g class="layer" data-depth="0.35">
+      <rect x="180" y="40" width="1240" height="560" fill="var(--frame)"></rect>
+      <g clip-path="url(#glass)">
+        <rect x={G.x} y={G.y} width={G.w} height={G.h} fill="url(#sky)"></rect>
+        <g class="night-only">
+          {stars.map((s) => <circle cx={s.x} cy={s.y} r={s.r} fill="#fff" opacity="0.7" />)}
+          <circle cx="1240" cy="140" r="26" fill="#f3ead2" opacity="0.9"></circle>
+          <circle cx="1252" cy="132" r="24" fill="var(--sky-top)" opacity="0.85"></circle>
+        </g>
+        <circle class="day-only" cx="1210" cy="150" r="42" fill="#ffe3a3"></circle>
+        <!-- hills around Cluj -->
+        <path
+          d={`M${G.x} 455 Q 360 410 560 448 T 920 430 T 1200 418 T ${G.x + G.w} 440 L ${G.x + G.w} ${ground} L ${G.x} ${ground} Z`}
+          fill="var(--hill)"
+        ></path>
+        {
+          buildings.map((b) => (
+            <g>
+              <rect x={b.x} y={ground - b.h} width={b.w} height={b.h} fill="var(--city)" />
+              {b.lights.map((l) => (
+                <rect
+                  class={`lit night-only${l.flicker ? ' flicker' : ''}`}
+                  x={l.x}
+                  y={l.y}
+                  width="5"
+                  height="7"
+                  fill="var(--window-lit)"
+                />
+              ))}
+            </g>
+          ))
+        }
+        <!-- St. Michael's Church: nave, tower and spire -->
+        <g fill="var(--city)">
+          <rect x="470" y="420" width="120" height="150"></rect>
+          <polygon points="470,420 530,388 590,420"></polygon>
+          <rect x="516" y="300" width="34" height="122"></rect>
+          <polygon points="514,302 533,178 552,302"></polygon>
+          <polygon points="506,312 510,286 514,312"></polygon>
+          <polygon points="552,312 556,286 560,312"></polygon>
+        </g>
+        <rect class="night-only" x="528" y="330" width="10" height="16" rx="5" fill="var(--window-lit)" opacity="0.8"
+        ></rect>
+        <g class="rain night-only">
+          {
+            drops.map((d) => (
+              <line
+                class="drop"
+                x1={d.x}
+                y1={d.y}
+                x2={d.x - 4}
+                y2={d.y + d.len}
+                style={`animation-delay:-${d.delay}s`}
+              />
+            ))
+          }
+        </g>
+      </g>
+      <!-- mullions and sill -->
+      <rect x="790" y="70" width="20" height="500" fill="var(--frame)"></rect>
+      <rect x="210" y="296" width="1180" height="14" fill="var(--frame)"></rect>
+      <rect x="150" y="586" width="1300" height="24" fill="var(--frame-dark)"></rect>
+    </g>
+
+    <!-- curtains -->
+    <g class="layer" data-depth="0.5">
+      <path d="M0 0 H170 Q150 300 178 600 Q120 640 0 640 Z" fill="var(--curtain)"></path>
+      <path d="M1600 0 H1440 Q1462 320 1430 610 Q1500 650 1600 650 Z" fill="var(--curtain)"></path>
+      <path d="M60 0 Q48 300 70 630" stroke="#000" stroke-opacity="0.12" stroke-width="10" fill="none"></path>
+      <path d="M1530 0 Q1546 320 1522 640" stroke="#000" stroke-opacity="0.12" stroke-width="10" fill="none"></path>
+    </g>
+
+    <!-- light from the lamp and the CRT -->
+    <ellipse class="night-only" cx="380" cy="560" rx="440" ry="330" fill="url(#lampGlow)"></ellipse>
+    <ellipse class="night-only" cx="805" cy="470" rx="300" ry="220" fill="url(#crtSpill)"></ellipse>
+
+    <!-- ===== desk and objects (near layer) ===== -->
+    <g class="layer" data-depth="1">
+      <rect x="0" y="688" width="1600" height="212" fill="var(--desk)"></rect>
+      <rect x="0" y="688" width="1600" height="8" fill="var(--desk-edge)"></rect>
+      <rect x="0" y="862" width="1600" height="38" fill="var(--desk-front)"></rect>
+      <ellipse class="night-only" cx="380" cy="740" rx="320" ry="70" fill="url(#lampGlow)"></ellipse>
+
+      <!-- FTC robot on the windowsill -> work -->
+      <a href="/#work" class="obj" aria-label="Small FTC robot on the windowsill: work and achievements">
+        <g>
+          <rect x="1050" y="510" width="6" height="14" fill="var(--robot-2)"></rect>
+          <circle cx="1053" cy="508" r="5" fill="var(--accent)"></circle>
+          <rect x="1036" y="522" width="40" height="34" rx="5" fill="var(--robot-2)"></rect>
+          <circle class="robot-eye" cx="1048" cy="538" r="4.5" fill="var(--accent)"></circle>
+          <circle class="robot-eye" cx="1064" cy="538" r="4.5" fill="var(--accent)"></circle>
+          <path d="M1076 534 L1098 520 L1106 538" stroke="var(--robot-2)" stroke-width="5" fill="none" stroke-linecap="round"
+          ></path>
+          <rect x="1022" y="556" width="70" height="22" rx="4" fill="var(--robot)"></rect>
+          <text x="1057" y="571" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#2a1a0c"
+            >FTC</text
+          >
+          <circle cx="1032" cy="581" r="7" fill="#1d1d1f"></circle>
+          <circle cx="1082" cy="581" r="7" fill="#1d1d1f"></circle>
+        </g>
+      </a>
+
+      <!-- CRT monitor -> projects -->
+      <a href="/#projects" class="obj" id="crt" aria-label="Old CRT monitor: projects">
+        <g>
+          <rect x="632" y="322" width="346" height="316" rx="16" fill="var(--crt-body)"></rect>
+          <rect x="648" y="338" width="314" height="238" rx="12" fill="var(--crt-bezel)"></rect>
+          <rect x="664" y="354" width="282" height="206" rx="20" fill="url(#screenGlow)"></rect>
+          <g clip-path="url(#screenClip)">
+            <g class="crt-text" id="crt-text">
+              <text class="status" x="680" y="377">MALUTAN.SYS</text>
+              <text class="status" x="930" y="377" text-anchor="end">CH 01</text>
+            </g>
+            <rect x="664" y="354" width="282" height="206" fill="url(#scan)"></rect>
+            <rect x="664" y="354" width="282" height="60" fill="#fff" opacity="0.04"></rect>
+          </g>
+          <text x="652" y="603" font-family="monospace" font-size="11" letter-spacing="3" fill="var(--crt-label)"
+            >MALUTAN</text
+          >
+          <text x="958" y="603" text-anchor="end" font-family="monospace" font-size="11" font-style="italic" fill="var(--crt-label)"
+            >Toyvision</text
+          >
+          <circle cx="760" cy="614" r="4" fill="#57e389"></circle>
+          <circle cx="852" cy="614" r="8" fill="var(--crt-bezel)"></circle>
+          <circle cx="878" cy="614" r="8" fill="var(--crt-bezel)"></circle>
+          <circle cx="904" cy="614" r="8" fill="var(--crt-bezel)"></circle>
+        </g>
+      </a>
+      <!-- VCR under the monitor, clock shows the visitor's local time -->
+      <g aria-hidden="true">
+        <rect x="616" y="638" width="378" height="52" rx="6" fill="var(--crt-body-dark)"></rect>
+        <rect x="640" y="656" width="150" height="10" rx="3" fill="#000" opacity="0.35"></rect>
+        <rect x="868" y="650" width="98" height="28" rx="4" fill="#06110c"></rect>
+        <text id="clock" x="917" y="671" text-anchor="middle" font-family="monospace" font-size="19" fill="#4dffb0"
+          >23:06</text
+        >
+      </g>
+
+      <!-- keyboard -->
+      <g aria-hidden="true">
+        <rect x="676" y="708" width="262" height="34" rx="6" fill="var(--crt-body-dark)"></rect>
+        {keys.map((k) => <rect x={k.x} y={k.y} width={k.w} height="6" rx="1.5" fill="var(--key)" />)}
+      </g>
+
+      <!-- lamp -> theme -->
+      <g
+        id="lamp"
+        class="obj"
+        role="button"
+        tabindex="0"
+        aria-label="Desk lamp: switch the room between night and day"
+      >
+        <g>
+          <ellipse cx="300" cy="684" rx="62" ry="12" fill="var(--lamp-metal)"></ellipse>
+          <rect x="294" y="668" width="12" height="16" fill="var(--lamp-metal)"></rect>
+          <path d="M300 672 L262 590 L338 512" stroke="var(--lamp-metal)" stroke-width="8" fill="none" stroke-linecap="round"
+          ></path>
+          <circle cx="262" cy="590" r="7" fill="var(--lamp-metal)"></circle>
+          <path d="M296 470 L376 436 L420 510 L330 540 Z" fill="var(--lamp-shade)"></path>
+          <ellipse cx="376" cy="526" rx="44" ry="10" transform="rotate(-18 376 526)" fill="var(--bulb)"></ellipse>
+        </g>
+      </g>
+
+      <!-- framed photo -> about -->
+      <a href="/#about" class="obj" aria-label="Framed photo of David: about">
+        <g transform="rotate(-4 486 626)">
+          <rect x="430" y="560" width="112" height="134" rx="4" fill="var(--frame-wood)"></rect>
+          <svg x="441" y="571" width="90" height="112" viewBox="330 540 600 750" preserveAspectRatio="xMidYMid slice">
+            <image href="/img/me.webp" width="1200" height="1600" filter="url(#sepia)"></image>
+          </svg>
+          <path d="M441 571 L500 571 L441 640 Z" fill="#fff" opacity="0.08"></path>
+        </g>
+      </a>
+
+      <!-- paper airplane -> flies; third click opens the Airplanes project -->
+      <g
+        id="plane"
+        class="obj"
+        role="button"
+        tabindex="0"
+        data-href="/#airplanes"
+        aria-label="Paper airplane: click to throw it, third click opens the Airplanes game"
+      >
+        <g>
+          <path d="M430 792 L540 762 L466 808 Z" fill="var(--paper)"></path>
+          <path d="M466 808 L478 786 L540 762" stroke="#000" stroke-opacity="0.25" stroke-width="2" fill="none"></path>
+          <path d="M478 786 L470 801" stroke="#000" stroke-opacity="0.25" stroke-width="2"></path>
+        </g>
+      </g>
+
+      <!-- mug with steam -->
+      <g aria-hidden="true">
+        <path class="steam" d="M1016 618 q-8 -14 0 -26 q8 -12 0 -24"></path>
+        <path class="steam" d="M1036 618 q-8 -14 0 -26 q8 -12 0 -24"></path>
+        <rect x="996" y="626" width="58" height="62" rx="8" fill="var(--mug)"></rect>
+        <path d="M1054 640 q24 2 22 22 q-2 18 -22 18" stroke="var(--mug)" stroke-width="8" fill="none"></path>
+        <ellipse cx="1025" cy="630" rx="26" ry="5" fill="#3b2416"></ellipse>
+        <text x="1025" y="664" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#7a6a55"
+          >UBB</text
+        >
+      </g>
+
+      <!-- stack of books: one per project -->
+      {
+        books.map((b) => (
+          <a href={`/#${b.slug}`} class="obj" aria-label={`Book: ${b.title}. Open the project`}>
+            <g>
+              <rect x={b.x} y={b.y} width={b.w} height="28" rx="2" fill={b.color} />
+              <rect x={b.x + 10} y={b.y} width="6" height="28" fill="#000" opacity="0.18" />
+              <rect x={b.x + b.w - 16} y={b.y} width="6" height="28" fill="#000" opacity="0.18" />
+              <text class="book-label" x={b.x + b.w / 2} y={b.y + 19} text-anchor="middle">
+                {b.label}
+              </text>
+            </g>
+          </a>
+        ))
+      }
+
+      <!-- notebook with a to-do list -->
+      <g aria-hidden="true" transform="rotate(3 1230 760)">
+        <rect x="1120" y="724" width="220" height="80" rx="3" fill="var(--paper)"></rect>
+        <rect x="1120" y="724" width="10" height="80" fill="#c4543f" opacity="0.7"></rect>
+        <text x="1142" y="748" font-family="monospace" font-size="13" fill="var(--pen)">todo:</text>
+        <text x="1142" y="768" font-family="monospace" font-size="13" fill="var(--pen)">- deploy momentifly</text>
+        <text x="1142" y="788" font-family="monospace" font-size="13" fill="var(--pen)">- record demos</text>
+      </g>
+
+      <!-- telephone -> online -->
+      <a href="/#online" class="obj" aria-label="Telephone: find David online">
+        <g>
+          <path d="M1424 690 L1442 646 L1546 646 L1564 690 Z" fill="var(--phone)"></path>
+          <rect x="1426" y="624" width="136" height="24" rx="12" fill="var(--phone-2)"></rect>
+          <circle cx="1494" cy="670" r="15" fill="var(--phone-2)"></circle>
+          <circle cx="1494" cy="670" r="5" fill="var(--phone)"></circle>
+        </g>
+      </a>
+    </g>
+
+    <rect width="1600" height="900" fill="url(#vignette)" pointer-events="none"></rect>
+    <rect width="1600" height="900" filter="url(#grain)" opacity="0.05" pointer-events="none"></rect>
+  </svg>
+
+  <p class="hero-hint">
+    <span class="hint-desktop">Click around the room · press <kbd>`</kbd> for a terminal</span>
+    <span class="hint-mobile">Tap the objects · <button type="button" data-terminal-open>open terminal</button></span>
+  </p>
+</section>
+
+<script>
+  const scene = document.querySelector<SVGSVGElement>('#scene');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (scene) {
+    // --- On phones, show the whole desk instead of cropping it to the monitor ---
+    const narrow = window.matchMedia('(max-width: 760px)');
+    const fit = () => {
+      scene.setAttribute('viewBox', narrow.matches ? '180 150 1300 750' : '0 0 1600 900');
+      scene.setAttribute('preserveAspectRatio', narrow.matches ? 'xMidYMax meet' : 'xMidYMid slice');
+    };
+    fit();
+    narrow.addEventListener('change', fit);
+
+    // --- VCR clock: visitor's local time ---
+    const clock = scene.querySelector('#clock');
+    const tick = () => {
+      const d = new Date();
+      if (clock) clock.textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    };
+    tick();
+    setInterval(tick, 20_000);
+
+    // --- CRT boot sequence: types and "runs" a program in the toy language ---
+    type Line = { text: string; kind: string };
+    const lines: Line[] = JSON.parse(scene.dataset.boot ?? '[]');
+    const textGroup = scene.querySelector('#crt-text');
+    const NS = 'http://www.w3.org/2000/svg';
+    const X = 680;
+    const Y0 = 400;
+    const LH = 17;
+    const els = lines.map((l, i) => {
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', String(X));
+      t.setAttribute('y', String(Y0 + i * LH));
+      t.setAttribute('class', l.kind);
+      textGroup?.appendChild(t);
+      return t;
+    });
+    const cursor = document.createElementNS(NS, 'rect');
+    cursor.setAttribute('width', '8');
+    cursor.setAttribute('height', '13');
+    cursor.setAttribute('fill', '#ffffff');
+    textGroup?.appendChild(cursor);
+
+    const placeCursor = (i: number, chars: number) => {
+      cursor.setAttribute('x', String(X + chars * 7.8 + 2));
+      cursor.setAttribute('y', String(Y0 + i * LH - 11));
+    };
+
+    let typing = false;
+    const finish = () => {
+      typing = false;
+      els.forEach((el, i) => (el.textContent = lines[i].text));
+      const last = lines.length - 1;
+      placeCursor(last, lines[last]?.text.length ?? 0);
+      cursor.classList.add('crt-cursor');
+    };
+
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem('booted') === '1';
+      sessionStorage.setItem('booted', '1');
+    } catch {}
+
+    if (reduceMotion || seen || !lines.length) {
+      finish();
+    } else {
+      typing = true;
+      let i = 0;
+      let c = 0;
+      const step = () => {
+        if (!typing) return;
+        const line = lines[i];
+        if (line.kind === 'out' || line.kind === 'ready') {
+          els[i].textContent = line.text; // output appears all at once
+          c = line.text.length;
+        } else {
+          c++;
+          els[i].textContent = line.text.slice(0, c);
+        }
+        placeCursor(i, c);
+        if (c >= line.text.length) {
+          i++;
+          c = 0;
+          if (i >= lines.length) return finish();
+          setTimeout(step, lines[i].kind === 'out' ? 380 : 160);
+        } else {
+          setTimeout(step, 28 + Math.random() * 40);
+        }
+      };
+      setTimeout(step, 600);
+    }
+
+    // First click on the monitor while it is still typing only skips the animation.
+    scene.querySelector('#crt')?.addEventListener('click', (e) => {
+      if (typing) {
+        e.preventDefault();
+        finish();
+      }
+    });
+
+    // --- Lamp switches the theme ---
+    const lamp = scene.querySelector('#lamp');
+    const activate = (el: Element | null, fn: () => void) => {
+      el?.addEventListener('click', fn);
+      el?.addEventListener('keydown', (e) => {
+        const k = (e as KeyboardEvent).key;
+        if (k === 'Enter' || k === ' ') {
+          e.preventDefault();
+          fn();
+        }
+      });
+    };
+    activate(lamp, () => window.__toggleTheme());
+
+    // --- Paper airplane: flies twice, third click opens the project ---
+    const plane = scene.querySelector<SVGGElement>('#plane');
+    let throws = 0;
+    activate(plane, () => {
+      throws++;
+      if (throws >= 3 || reduceMotion) {
+        location.href = plane?.dataset.href ?? '/#projects';
+        return;
+      }
+      plane?.classList.remove('fly');
+      void plane?.getBoundingClientRect();
+      plane?.classList.add('fly');
+    });
+    plane?.addEventListener('animationend', () => plane.classList.remove('fly'));
+
+    // --- Gentle parallax on mouse move ---
+    const fine = window.matchMedia('(pointer: fine)').matches;
+    if (fine && !reduceMotion) {
+      const layers = Array.from(scene.querySelectorAll<SVGGElement>('.layer'));
+      let raf = 0;
+      scene.addEventListener('pointermove', (e) => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const dx = e.clientX / window.innerWidth - 0.5;
+          const dy = e.clientY / window.innerHeight - 0.5;
+          layers.forEach((l) => {
+            const d = Number(l.dataset.depth ?? 1);
+            l.style.transform = `translate(${(-dx * 12 * d).toFixed(2)}px, ${(-dy * 8 * d).toFixed(2)}px)`;
+          });
+        });
+      });
+    }
+  }
+</script>

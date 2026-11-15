@@ -1,0 +1,19 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { formatDate } from '../data/format';
+
+const now = await getEntry('pages', 'now');
+if (!now) throw new Error('src/content/pages/now.md is missing');
+const { Content } = await render(now);
+---
+
+<Base title="Now" description="What David is focused on at the moment.">
+  <div class="page">
+    <article class="post">
+      <h1 class="label">Now</h1>
+      {now.data.updated && <p class="date">Updated {formatDate(now.data.updated)}</p>}
+      <div class="body"><Content /></div>
+    </article>
+  </div>
+</Base>

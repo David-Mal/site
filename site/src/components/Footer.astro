@@ -1,0 +1,10 @@
+---
+// Cloudflare Pages sets this during the build; locally it is empty.
+const sha = (process.env.CF_PAGES_COMMIT_SHA ?? '').slice(0, 7);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  © {year} David Malutan · v1.0{sha && ` (${sha})`} · built with Astro, no trackers ·
+  <a href="/now">now</a> · <a href="/rss.xml">rss</a>
+</footer>

@@ -1,0 +1,17 @@
+<button class="theme-pill" type="button" data-theme-toggle aria-label="Switch between dark and light theme">
+  <span class="dot" aria-hidden="true"></span>
+  <span data-theme-label>DARK</span>
+</button>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const label = document.querySelector('[data-theme-label]');
+  const sync = () => {
+    const light = document.documentElement.dataset.theme === 'light';
+    if (label) label.textContent = light ? 'LIGHT' : 'DARK';
+    btn?.setAttribute('aria-pressed', String(light));
+  };
+  btn?.addEventListener('click', () => window.__toggleTheme());
+  document.addEventListener('themechange', sync);
+  sync();
+</script>

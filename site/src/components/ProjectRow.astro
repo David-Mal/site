@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const d = project.data;
+const isLive = d.status === 'live' && d.url;
+const hasVideo = d.status === 'demo' && d.video;
+---
+
+<article class="row" id={project.id}>
+  <div class="row-hd">
+    {
+      isLive ? (
+        <a class="t" href={d.url} target="_blank" rel="noopener">
+          {d.title} <span aria-hidden="true">↗</span>
+        </a>
+      ) : hasVideo ? (
+        <button class="t linklike" type="button" data-video={d.video} data-poster={d.poster} data-title={d.title}>
+          {d.title} <span class="tag">▶ watch demo</span>
+        </button>
+      ) : (
+        <span class="t">{d.title}</span>
+      )
+    }
+    <span class="y">{d.year}</span>
+  </div>
+  <p>{d.description}</p>
+  <div class="meta" style="margin-top:8px">
+    {d.stack.length > 0 && <span>{d.stack.join(' · ')}</span>}
+    {isLive && d.note && <span class="note">{d.note}</span>}
+    {d.status === 'soon' && <span class="tag">Coming soon</span>}
+    {d.status === 'demo' && !d.video && <span class="tag">Video coming soon</span>}
+    {d.repo && <a href={d.repo} target="_blank" rel="noopener">source</a>}
+  </div>
+</article>

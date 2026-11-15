@@ -1,0 +1,42 @@
+---
+import { work, achievements } from '../../data/site';
+
+interface Props {
+  standalone?: boolean;
+}
+const { standalone = false } = Astro.props;
+const Heading = standalone ? 'h1' : 'h2';
+---
+
+<section class="section" id="work">
+  <Heading class="label">Work</Heading>
+  <div>
+    {
+      work.map((w) => (
+        <article class="row">
+          <div class="row-hd">
+            <span class="t">{w.title}</span>
+            <span class="y">{w.year}</span>
+          </div>
+          <div class="sub">{w.subtitle}</div>
+          <p>{w.text}</p>
+        </article>
+      ))
+    }
+  </div>
+
+  <h3 class="sublabel">Achievements</h3>
+  <div>
+    {
+      achievements.map((a) => (
+        <article class="row">
+          <div class="row-hd">
+            <span class="t">{a.title}</span>
+            {a.year && <span class="y">{a.year}</span>}
+          </div>
+          <p>{a.text}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,80 @@
+/* Design tokens. Dark is the default; light is the same room in daylight. */
+:root,
+[data-theme='dark'] {
+  --bg: #0f1219;
+  --surface: #161a23;
+  --ink: #e8e3d8;
+  --muted: #8a8578;
+  --line: rgba(232, 227, 216, 0.12);
+  --accent: #ffb454;
+  --crt: #3b4ec8;
+
+  /* scene */
+  --wall: #1a1c25;
+  --frame: #2a2622;
+  --frame-dark: #1d1a17;
+  --sky-top: #060913;
+  --sky-bot: #1e2a4f;
+  --hill: #131829;
+  --city: #0b0e18;
+  --window-lit: #ffcf7a;
+  --curtain: #262230;
+  --desk: #3a2a1f;
+  --desk-edge: #4c372a;
+  --desk-front: #22170f;
+  --lamp-shade: #c4543f;
+  --lamp-metal: #8c7b6b;
+  --bulb: #ffe6a8;
+  --glow: #ffb454;
+  --crt-body: #2c2c2f;
+  --crt-bezel: #17171a;
+  --crt-body-dark: #1d1d20;
+  --crt-label: #8f8f93;
+  --frame-wood: #6e4a30;
+  --mug: #d8d2c4;
+  --robot: #d0742b;
+  --robot-2: #56606e;
+  --phone: #7a2f2a;
+  --phone-2: #5d221e;
+  --paper: #e9e2d0;
+  --key: #2f2f33;
+  --pen: #4a4a4a;
+
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --bg: #f4ede2;
+  --surface: #ebe2d3;
+  --ink: #1c1a16;
+  --muted: #6b6456;
+  --line: rgba(28, 26, 22, 0.14);
+  --accent: #c47512;
+
+  --wall: #dccdb5;
+  --frame: #f1e9da;
+  --frame-dark: #d3c4ab;
+  --sky-top: #86bde6;
+  --sky-bot: #f5dcb5;
+  --hill: #9fb3a2;
+  --city: #7f8b99;
+  --curtain: #eadbc7;
+  --desk: #a77b55;
+  --desk-edge: #bb8e66;
+  --desk-front: #7d5737;
+  --bulb: #efe6d0;
+  --crt-body: #d9d3c7;
+  --crt-bezel: #b9b2a4;
+  --crt-body-dark: #c8c0b1;
+  --crt-label: #6b6456;
+  --key: #b3ab9c;
+
+  color-scheme: light;
+}
+
+:root {
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --measure: 720px;
+}

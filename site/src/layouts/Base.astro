@@ -1,0 +1,96 @@
+---
+import '@fontsource/archivo/400.css';
+import '@fontsource/archivo/700.css';
+import '@fontsource/archivo/900.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import Terminal from '../components/Terminal.astro';
+import VideoModal from '../components/VideoModal.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  hero?: boolean;
+}
+
+const { title, description = site.description, hero = false } = Astro.props;
+const fullTitle = title ? `${title} · ${site.name}` : site.name;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/img/me.webp', Astro.site);
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name}: posts`} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="theme-color" content="#0f1219" />
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        var t = 'dark';
+        try {
+          t = localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
+        } catch (e) {}
+        d.dataset.theme = t;
+        window.__setTheme = function (next) {
+          d.classList.add('theme-anim');
+          d.dataset.theme = next;
+          try {
+            localStorage.setItem('theme', next);
+          } catch (e) {}
+          document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+          setTimeout(function () {
+            d.classList.remove('theme-anim');
+          }, 600);
+        };
+        window.__toggleTheme = function () {
+          window.__setTheme(d.dataset.theme === 'light' ? 'dark' : 'light');
+        };
+      })();
+    </script>
+  </head>
+  <body class={hero ? 'has-hero' : 'no-hero'}>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <ThemeToggle />
+    <Terminal />
+    <VideoModal />
+    <script>
+      // Header gets a solid background once you scroll past the top.
+      const header = document.querySelector('[data-header]');
+      const onScroll = () => header?.classList.toggle('scrolled', window.scrollY > 40);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // E-mail links are assembled here so the address is never plain text in the HTML.
+      document.querySelectorAll<HTMLAnchorElement>('[data-mail]').forEach((a) => {
+        const addr = (a.dataset.mail ?? '').split('').reverse().join('');
+        a.href = `mailto:${addr}`;
+        if (a.hasAttribute('data-mail-show')) a.textContent = addr;
+      });
+    </script>
+  </body>
+</html>

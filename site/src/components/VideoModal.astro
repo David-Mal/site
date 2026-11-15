@@ -1,0 +1,43 @@
+<dialog class="vmodal" data-vmodal aria-label="Project demo video">
+  <div class="vm-hd">
+    <span data-vm-title>Demo</span>
+    <button type="button" data-vm-close aria-label="Close video">×</button>
+  </div>
+  <video data-vm-video controls muted playsinline preload="none"></video>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-vmodal]');
+  const video = dialog?.querySelector<HTMLVideoElement>('[data-vm-video]');
+  const title = dialog?.querySelector('[data-vm-title]');
+
+  const close = () => {
+    if (!dialog || !video) return;
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+    dialog.close();
+  };
+
+  // The video file is only requested when someone clicks a project.
+  document.querySelectorAll<HTMLButtonElement>('[data-video]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (!dialog || !video) return;
+      if (title) title.textContent = btn.dataset.title ?? 'Demo';
+      if (btn.dataset.poster) video.poster = btn.dataset.poster;
+      else video.removeAttribute('poster');
+      video.src = btn.dataset.video ?? '';
+      dialog.showModal();
+      video.play().catch(() => {});
+    });
+  });
+
+  dialog?.querySelector('[data-vm-close]')?.addEventListener('click', close);
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) close(); // click on the backdrop
+  });
+  dialog?.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    close();
+  });
+</script>
