@@ -25,9 +25,3 @@ Personal site of David Malutan. Astro, static, hosted on Cloudflare Pages.
 | Photo on the desk | `public/img/me.webp` |
 | CV (public version, no phone number) | `public/cv/David_Malutan_CV.pdf` |
 | Project demo videos | `public/videos/` |
-
-## Publishing
-
-Push to `main`. Cloudflare Pages builds with `npm run build` and serves `dist/`.
-
-Full guide (Romanian): `ghid-utilizare.pdf`.
