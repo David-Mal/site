@@ -346,22 +346,6 @@ for (let row = 0; row < 3; row++) {
         </g>
       </a>
 
-      <!-- paper airplane -> flies; third click opens the Airplanes project -->
-      <g
-        id="plane"
-        class="obj"
-        role="button"
-        tabindex="0"
-        data-href="/#airplanes"
-        aria-label="Paper airplane: click to throw it, third click opens the Airplanes game"
-      >
-        <g>
-          <path d="M430 792 L540 762 L466 808 Z" fill="var(--paper)"></path>
-          <path d="M466 808 L478 786 L540 762" stroke="#000" stroke-opacity="0.25" stroke-width="2" fill="none"></path>
-          <path d="M478 786 L470 801" stroke="#000" stroke-opacity="0.25" stroke-width="2"></path>
-        </g>
-      </g>
-
       <!-- mug with steam -->
       <g aria-hidden="true">
         <path class="steam" d="M1016 618 q-8 -14 0 -26 q8 -12 0 -24"></path>
@@ -475,7 +459,7 @@ for (let row = 0; row < 3; row++) {
             >MALUTAN</text
           >
           <text x="958" y="603" text-anchor="end" font-family="monospace" font-size="11" font-style="italic" fill="var(--crt-label)"
-            >Toyvision</text
+            >-DMN-</text
           >
           <circle cx="760" cy="614" r="4" fill="#57e389"></circle>
           <circle cx="852" cy="614" r="8" fill="var(--crt-bezel)"></circle>
@@ -495,6 +479,23 @@ for (let row = 0; row < 3; row++) {
 
       <ellipse class="night-only" cx="805" cy="712" rx="250" ry="26" fill="url(#crtSpill)" opacity="0.7" pointer-events="none"></ellipse>
       <rect class="night-only" x="1100" y="505" width="14" height="186" fill="#6f80ff" opacity="0.16" filter="url(#blur3)" pointer-events="none"></rect>
+
+      <!-- drawn last so it flies in front of the monitor, not behind it -->
+      <!-- paper airplane -> flies; third click opens the Airplanes project -->
+      <g
+        id="plane"
+        class="obj"
+        role="button"
+        tabindex="0"
+        data-href="/#airplanes"
+        aria-label="Paper airplane: click to throw it, third click opens the Airplanes game"
+      >
+        <g>
+          <path d="M430 792 L540 762 L466 808 Z" fill="var(--paper)"></path>
+          <path d="M466 808 L478 786 L540 762" stroke="#000" stroke-opacity="0.25" stroke-width="2" fill="none"></path>
+          <path d="M478 786 L470 801" stroke="#000" stroke-opacity="0.25" stroke-width="2"></path>
+        </g>
+      </g>
     </g>
 
     <rect width="1600" height="900" fill="url(#vignette)" pointer-events="none"></rect>
