@@ -9,11 +9,11 @@ const { Content } = await render(now);
 ---
 
 <Base title="Now" description="What David is focused on at the moment.">
-  <div class="page">
+  <div class="page"><div class="sheet">
     <article class="post">
-      <h1 class="label">Now</h1>
+      <h1>Now</h1>
       {now.data.updated && <p class="date">Updated {formatDate(now.data.updated)}</p>}
       <div class="body"><Content /></div>
     </article>
-  </div>
+  </div></div>
 </Base>

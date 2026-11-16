@@ -13,13 +13,22 @@ const Heading = standalone ? 'h1' : 'h2';
 
 <section class="section" id="about">
   <Heading class="label">About</Heading>
-  <div class="prose">{Content && <Content />}</div>
-  <ul class="chips" aria-label="Skills">
-    {skills.map((s) => <li>{s}</li>)}
-  </ul>
-  <div class="actions">
-    <a class="btn primary" href={site.cv} download>Download CV</a>
-    <a class="btn" href="/cv">View CV</a>
-    <a class="btn" href="/now">What I'm doing now</a>
+  <div>
+    <div class="prose">{Content && <Content />}</div>
+    <dl class="facts">
+      {
+        skills.map((s) => (
+          <>
+            <dt>{s.label}</dt>
+            <dd>{s.items}</dd>
+          </>
+        ))
+      }
+    </dl>
+    <p class="links">
+      <a href={site.cv} download>Download CV ↓</a>
+      <a href="/cv">Read it here</a>
+      <a href="/now">What I'm doing now</a>
+    </p>
   </div>
 </section>

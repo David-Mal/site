@@ -13,9 +13,9 @@ export const site = {
 };
 
 export const skills = [
-  'Java', 'Python', 'C/C++', 'JavaScript', 'SQL',
-  'Spring Boot', 'Angular', 'React', 'Express', 'Qt', 'JavaFX',
-  'Git', 'Gradle', 'Flyway', 'PostgreSQL', 'Mockito', 'Vitest',
+  { label: 'Languages', items: 'Java, Python, C/C++, JavaScript, SQL' },
+  { label: 'Frameworks', items: 'Spring Boot, Angular, React, Express, Qt, JavaFX' },
+  { label: 'Tools', items: 'Git, Gradle, Flyway, PostgreSQL, Mockito, Vitest' },
 ];
 
 export const work = [

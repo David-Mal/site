@@ -4,13 +4,13 @@ import { site } from '../data/site';
 ---
 
 <Base title="CV" description="David Malutan's CV.">
-  <div class="page">
-    <h1 class="label">CV</h1>
+  <div class="page"><div class="sheet">
+    <div class="post"><h1>CV</h1></div>
     <p>The short version is on the <a href="/">home page</a>. The full one is here.</p>
     <div class="actions">
       <a class="btn primary" href={site.cv} download>Download CV (PDF)</a>
       <a class="btn" href={site.cv} target="_blank" rel="noopener">Open in a new tab</a>
     </div>
     <iframe class="cv-frame" src={site.cv} title="David Malutan's CV" loading="lazy"></iframe>
-  </div>
+  </div></div>
 </Base>

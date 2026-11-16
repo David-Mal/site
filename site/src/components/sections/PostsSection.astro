@@ -17,6 +17,7 @@ const Heading = standalone ? 'h1' : 'h2';
 <section class="section" id="posts">
   <Heading class="label">Posts</Heading>
   <div>
+  <div class="rows">
     {
       posts.map((p) => (
         <article class="row">
@@ -34,4 +35,5 @@ const Heading = standalone ? 'h1' : 'h2';
     }
   </div>
   {limit && all.length > limit && <a class="more" href="/posts">All posts →</a>}
+  </div>
 </section>

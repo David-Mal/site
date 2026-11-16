@@ -50,7 +50,7 @@ const drops = Array.from({ length: 70 }, () => ({
   delay: (rnd() * 1.4).toFixed(2),
 }));
 
-const bookColors = ['#b9503a', '#2f6f73', '#c7922f', '#3e4f8a', '#5f8547', '#7f4a73'];
+const bookColors = ['#a3432e', '#27585c', '#b3852c', '#33407a', '#526d3d', '#6b4064'];
 const books = projects.map((p, i) => ({
   slug: p.id,
   title: p.data.title,
@@ -60,6 +60,18 @@ const books = projects.map((p, i) => ({
   w: 232 + Math.round(rnd() * 34),
   color: bookColors[i % bookColors.length],
 }));
+
+// Out-of-focus city lights and one aircraft beacon on the tallest block
+const bokehColors = ['#ffcf7a', '#ff9d6b', '#8fd3ff', '#ffe9b8', '#ff7a6b'];
+const bokeh = Array.from({ length: 22 }, (_, i) => ({
+  x: G.x + 30 + rnd() * (G.w - 60),
+  y: 450 + rnd() * 105,
+  r: 3 + rnd() * 6,
+  o: (0.18 + rnd() * 0.3).toFixed(2),
+  c: bokehColors[i % bokehColors.length],
+}));
+const tallest = buildings.filter((b) => b.x > 900).reduce((a, b) => (b.h > a.h ? b : a));
+const beacon = { x: tallest.x + tallest.w / 2, y: ground - tallest.h - 5 };
 
 // Keyboard keys in front of the monitor
 const keys: { x: number; y: number; w: number }[] = [];
@@ -78,6 +90,7 @@ for (let row = 0; row < 3; row++) {
     <defs>
       <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" style="stop-color: var(--sky-top)"></stop>
+        <stop offset="0.62" style="stop-color: var(--sky-mid)"></stop>
         <stop offset="1" style="stop-color: var(--sky-bot)"></stop>
       </linearGradient>
       <radialGradient id="lampGlow">
@@ -97,6 +110,51 @@ for (let row = 0; row < 3; row++) {
         <stop offset="0.55" stop-color="#000" stop-opacity="0"></stop>
         <stop offset="1" stop-color="#000" stop-opacity="0.55"></stop>
       </radialGradient>
+      <linearGradient id="frameLit" gradientUnits="userSpaceOnUse" x1="180" y1="0" x2="1420" y2="0">
+        <stop offset="0" style="stop-color: var(--frame-lit)"></stop>
+        <stop offset="0.42" style="stop-color: var(--frame)"></stop>
+        <stop offset="1" style="stop-color: var(--frame-dark)"></stop>
+      </linearGradient>
+      <linearGradient id="deskGrad" gradientUnits="userSpaceOnUse" x1="0" y1="688" x2="1600" y2="900">
+        <stop offset="0" style="stop-color: var(--desk-lit)"></stop>
+        <stop offset="0.5" style="stop-color: var(--desk)"></stop>
+        <stop offset="1" style="stop-color: var(--desk-front)"></stop>
+      </linearGradient>
+      <radialGradient id="ambient" gradientUnits="userSpaceOnUse" cx="400" cy="600" r="1150">
+        <stop offset="0" stop-color="#04050b" stop-opacity="0"></stop>
+        <stop offset="0.3" stop-color="#04050b" stop-opacity="0.1"></stop>
+        <stop offset="1" stop-color="#04050b" stop-opacity="0.46"></stop>
+      </radialGradient>
+      <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffd08a" stop-opacity="0.2"></stop>
+        <stop offset="1" stop-color="#ffd08a" stop-opacity="0"></stop>
+      </linearGradient>
+      <radialGradient id="screenVig" cx="0.5" cy="0.5" r="0.72">
+        <stop offset="0.5" stop-color="#040a34" stop-opacity="0"></stop>
+        <stop offset="1" stop-color="#040a34" stop-opacity="0.65"></stop>
+      </radialGradient>
+      <linearGradient id="bookShade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0.2"></stop>
+        <stop offset="0.22" stop-color="#fff" stop-opacity="0"></stop>
+        <stop offset="0.75" stop-color="#000" stop-opacity="0"></stop>
+        <stop offset="1" stop-color="#000" stop-opacity="0.32"></stop>
+      </linearGradient>
+      <linearGradient id="bodyShade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0.13"></stop>
+        <stop offset="0.12" stop-color="#fff" stop-opacity="0"></stop>
+        <stop offset="0.7" stop-color="#000" stop-opacity="0"></stop>
+        <stop offset="1" stop-color="#000" stop-opacity="0.3"></stop>
+      </linearGradient>
+      <filter id="soft"><feGaussianBlur stdDeviation="0.7"></feGaussianBlur></filter>
+      <filter id="blur3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"></feGaussianBlur></filter>
+      <filter id="blur8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"></feGaussianBlur></filter>
+      <filter id="blur24" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="24"></feGaussianBlur></filter>
+      <pattern id="woodgrain" width="560" height="52" patternUnits="userSpaceOnUse">
+        <path d="M0 9 Q140 3 280 10 T560 8" stroke="#000" stroke-opacity="0.13" fill="none"></path>
+        <path d="M0 24 Q180 31 330 22 T560 25" stroke="#000" stroke-opacity="0.1" fill="none"></path>
+        <path d="M0 38 Q120 34 260 41 T560 37" stroke="#fff" stroke-opacity="0.05" fill="none"></path>
+        <path d="M0 47 Q200 52 380 45 T560 48" stroke="#000" stroke-opacity="0.09" fill="none"></path>
+      </pattern>
       <clipPath id="glass"><rect x={G.x} y={G.y} width={G.w} height={G.h}></rect></clipPath>
       <clipPath id="screenClip"><rect x="664" y="354" width="282" height="206" rx="20"></rect></clipPath>
       <pattern id="scan" width="4" height="3" patternUnits="userSpaceOnUse">
@@ -118,7 +176,7 @@ for (let row = 0; row < 3; row++) {
 
     <!-- ===== window (far layer) ===== -->
     <g class="layer" data-depth="0.35">
-      <rect x="180" y="40" width="1240" height="560" fill="var(--frame)"></rect>
+      <rect x="180" y="40" width="1240" height="560" fill="url(#frameLit)"></rect>
       <g clip-path="url(#glass)">
         <rect x={G.x} y={G.y} width={G.w} height={G.h} fill="url(#sky)"></rect>
         <g class="night-only">
@@ -134,7 +192,7 @@ for (let row = 0; row < 3; row++) {
         ></path>
         {
           buildings.map((b) => (
-            <g>
+            <g filter="url(#soft)">
               <rect x={b.x} y={ground - b.h} width={b.w} height={b.h} fill="var(--city)" />
               {b.lights.map((l) => (
                 <rect
@@ -160,6 +218,11 @@ for (let row = 0; row < 3; row++) {
         </g>
         <rect class="night-only" x="528" y="330" width="10" height="16" rx="5" fill="var(--window-lit)" opacity="0.8"
         ></rect>
+        <!-- out-of-focus lights, an aircraft beacon, and haze over the roofs -->
+        <g class="night-only" filter="url(#blur3)">
+          {bokeh.map((b) => <circle cx={b.x} cy={b.y} r={b.r} fill={b.c} opacity={b.o} />)}
+        </g>
+        <circle class="beacon night-only" cx={beacon.x} cy={beacon.y} r="2.6" fill="#ff5648"></circle>
         <g class="rain night-only">
           {
             drops.map((d) => (
@@ -175,9 +238,15 @@ for (let row = 0; row < 3; row++) {
           }
         </g>
       </g>
+      <!-- reflections on the glass -->
+      <g clip-path="url(#glass)" pointer-events="none">
+        <polygon points="330,70 430,70 210,570 110,570" fill="#fff" opacity="0.018"></polygon>
+        <polygon points="1010,70 1060,70 840,570 790,570" fill="#fff" opacity="0.018"></polygon>
+        <ellipse class="night-only" cx="330" cy="330" rx="150" ry="110" fill="#ffb454" opacity="0.1" filter="url(#blur24)"></ellipse>
+      </g>
       <!-- mullions and sill -->
-      <rect x="790" y="70" width="20" height="500" fill="var(--frame)"></rect>
-      <rect x="210" y="296" width="1180" height="14" fill="var(--frame)"></rect>
+      <rect x="790" y="70" width="20" height="500" fill="url(#frameLit)"></rect>
+      <rect x="210" y="296" width="1180" height="14" fill="url(#frameLit)"></rect>
       <rect x="150" y="586" width="1300" height="24" fill="var(--frame-dark)"></rect>
     </g>
 
@@ -185,7 +254,11 @@ for (let row = 0; row < 3; row++) {
     <g class="layer" data-depth="0.5">
       <path d="M0 0 H170 Q150 300 178 600 Q120 640 0 640 Z" fill="var(--curtain)"></path>
       <path d="M1600 0 H1440 Q1462 320 1430 610 Q1500 650 1600 650 Z" fill="var(--curtain)"></path>
-      <path d="M60 0 Q48 300 70 630" stroke="#000" stroke-opacity="0.12" stroke-width="10" fill="none"></path>
+      <path d="M60 0 Q48 300 70 630" stroke="#000" stroke-opacity="0.14" stroke-width="12" fill="none"></path>
+      <path d="M112 0 Q100 300 124 620" stroke="#000" stroke-opacity="0.1" stroke-width="8" fill="none"></path>
+      <path d="M22 0 Q14 300 28 640" stroke="#fff" stroke-opacity="0.04" stroke-width="10" fill="none"></path>
+      <path d="M1482 0 Q1500 320 1472 630" stroke="#000" stroke-opacity="0.1" stroke-width="8" fill="none"></path>
+      <path d="M1574 0 Q1586 320 1570 650" stroke="#fff" stroke-opacity="0.04" stroke-width="10" fill="none"></path>
       <path d="M1530 0 Q1546 320 1522 640" stroke="#000" stroke-opacity="0.12" stroke-width="10" fill="none"></path>
     </g>
 
@@ -195,10 +268,25 @@ for (let row = 0; row < 3; row++) {
 
     <!-- ===== desk and objects (near layer) ===== -->
     <g class="layer" data-depth="1">
-      <rect x="0" y="688" width="1600" height="212" fill="var(--desk)"></rect>
+      <rect x="0" y="688" width="1600" height="212" fill="url(#deskGrad)"></rect>
+      <rect x="0" y="696" width="1600" height="166" fill="url(#woodgrain)"></rect>
       <rect x="0" y="688" width="1600" height="8" fill="var(--desk-edge)"></rect>
       <rect x="0" y="862" width="1600" height="38" fill="var(--desk-front)"></rect>
       <ellipse class="night-only" cx="380" cy="740" rx="320" ry="70" fill="url(#lampGlow)"></ellipse>
+
+      <!-- contact shadows, so nothing floats -->
+      <g fill="#000" opacity="0.4" filter="url(#blur3)" pointer-events="none">
+        <ellipse cx="300" cy="693" rx="74" ry="7"></ellipse>
+        <ellipse cx="490" cy="696" rx="62" ry="6"></ellipse>
+        <ellipse cx="805" cy="694" rx="204" ry="7"></ellipse>
+        <ellipse cx="807" cy="745" rx="138" ry="5"></ellipse>
+        <ellipse cx="1032" cy="692" rx="40" ry="5"></ellipse>
+        <ellipse cx="1245" cy="693" rx="146" ry="7"></ellipse>
+        <ellipse cx="1494" cy="693" rx="78" ry="6"></ellipse>
+        <ellipse cx="490" cy="809" rx="52" ry="4"></ellipse>
+        <ellipse cx="1232" cy="808" rx="116" ry="5"></ellipse>
+        <ellipse cx="1057" cy="589" rx="40" ry="3"></ellipse>
+      </g>
 
       <!-- FTC robot on the windowsill -> work -->
       <a href="/#work" class="obj" aria-label="Small FTC robot on the windowsill: work and achievements">
@@ -219,48 +307,13 @@ for (let row = 0; row < 3; row++) {
         </g>
       </a>
 
-      <!-- CRT monitor -> projects -->
-      <a href="/#projects" class="obj" id="crt" aria-label="Old CRT monitor: projects">
-        <g>
-          <rect x="632" y="322" width="346" height="316" rx="16" fill="var(--crt-body)"></rect>
-          <rect x="648" y="338" width="314" height="238" rx="12" fill="var(--crt-bezel)"></rect>
-          <rect x="664" y="354" width="282" height="206" rx="20" fill="url(#screenGlow)"></rect>
-          <g clip-path="url(#screenClip)">
-            <g class="crt-text" id="crt-text">
-              <text class="status" x="680" y="377">MALUTAN.SYS</text>
-              <text class="status" x="930" y="377" text-anchor="end">CH 01</text>
-            </g>
-            <rect x="664" y="354" width="282" height="206" fill="url(#scan)"></rect>
-            <rect x="664" y="354" width="282" height="60" fill="#fff" opacity="0.04"></rect>
-          </g>
-          <text x="652" y="603" font-family="monospace" font-size="11" letter-spacing="3" fill="var(--crt-label)"
-            >MALUTAN</text
-          >
-          <text x="958" y="603" text-anchor="end" font-family="monospace" font-size="11" font-style="italic" fill="var(--crt-label)"
-            >Toyvision</text
-          >
-          <circle cx="760" cy="614" r="4" fill="#57e389"></circle>
-          <circle cx="852" cy="614" r="8" fill="var(--crt-bezel)"></circle>
-          <circle cx="878" cy="614" r="8" fill="var(--crt-bezel)"></circle>
-          <circle cx="904" cy="614" r="8" fill="var(--crt-bezel)"></circle>
-        </g>
-      </a>
-      <!-- VCR under the monitor, clock shows the visitor's local time -->
-      <g aria-hidden="true">
-        <rect x="616" y="638" width="378" height="52" rx="6" fill="var(--crt-body-dark)"></rect>
-        <rect x="640" y="656" width="150" height="10" rx="3" fill="#000" opacity="0.35"></rect>
-        <rect x="868" y="650" width="98" height="28" rx="4" fill="#06110c"></rect>
-        <text id="clock" x="917" y="671" text-anchor="middle" font-family="monospace" font-size="19" fill="#4dffb0"
-          >23:06</text
-        >
-      </g>
-
       <!-- keyboard -->
       <g aria-hidden="true">
         <rect x="676" y="708" width="262" height="34" rx="6" fill="var(--crt-body-dark)"></rect>
         {keys.map((k) => <rect x={k.x} y={k.y} width={k.w} height="6" rx="1.5" fill="var(--key)" />)}
       </g>
 
+      <polygon class="night-only" points="340,540 414,516 540,700 210,700" fill="url(#cone)" filter="url(#blur8)" pointer-events="none"></polygon>
       <!-- lamp -> theme -->
       <g
         id="lamp"
@@ -277,6 +330,8 @@ for (let row = 0; row < 3; row++) {
           <circle cx="262" cy="590" r="7" fill="var(--lamp-metal)"></circle>
           <path d="M296 470 L376 436 L420 510 L330 540 Z" fill="var(--lamp-shade)"></path>
           <ellipse cx="376" cy="526" rx="44" ry="10" transform="rotate(-18 376 526)" fill="var(--bulb)"></ellipse>
+          <ellipse class="night-only" cx="378" cy="532" rx="58" ry="20" fill="#ffd9a0" opacity="0.75" filter="url(#blur8)" pointer-events="none"></ellipse>
+          <path d="M296 470 L376 436 L383 448 L302 483 Z" fill="#fff" opacity="0.12"></path>
         </g>
       </g>
 
@@ -322,12 +377,14 @@ for (let row = 0; row < 3; row++) {
       <!-- stack of books: one per project -->
       {
         books.map((b) => (
-          <a href={`/#${b.slug}`} class="obj" aria-label={`Book: ${b.title}. Open the project`}>
+          <a href={`/#${b.slug}`} class="obj book" aria-label={`Book: ${b.title}. Open the project`}>
             <g>
               <rect x={b.x} y={b.y} width={b.w} height="28" rx="2" fill={b.color} />
-              <rect x={b.x + 10} y={b.y} width="6" height="28" fill="#000" opacity="0.18" />
-              <rect x={b.x + b.w - 16} y={b.y} width="6" height="28" fill="#000" opacity="0.18" />
-              <text class="book-label" x={b.x + b.w / 2} y={b.y + 19} text-anchor="middle">
+              <rect x={b.x} y={b.y} width={b.w} height="28" rx="2" fill="url(#bookShade)" />
+              <rect x={b.x + 14} y={b.y + 5} width="1.5" height="18" fill="#fff" opacity="0.4" />
+              <rect x={b.x + 19} y={b.y + 5} width="1.5" height="18" fill="#fff" opacity="0.4" />
+              <rect x={b.x + b.w - 16} y={b.y + 5} width="1.5" height="18" fill="#fff" opacity="0.4" />
+              <text class="book-label" x={b.x + b.w / 2 + 3} y={b.y + 18.5} text-anchor="middle" fill="#fff" fill-opacity="0.93">
                 {b.label}
               </text>
             </g>
@@ -353,10 +410,56 @@ for (let row = 0; row < 3; row++) {
           <circle cx="1494" cy="670" r="5" fill="var(--phone)"></circle>
         </g>
       </a>
+
+      <!-- the room falls into shadow away from the lamp; the monitor lights itself -->
+      <rect class="night-only" x="-60" y="-60" width="1720" height="1020" fill="url(#ambient)" pointer-events="none"></rect>
+      <rect class="night-only" x="648" y="338" width="314" height="238" rx="30" fill="#4d60ff" opacity="0.5" filter="url(#blur24)" pointer-events="none"></rect>
+
+      <!-- CRT monitor -> projects -->
+      <a href="/#projects" class="obj" id="crt" aria-label="Old CRT monitor: projects">
+        <g>
+          <rect x="632" y="322" width="346" height="316" rx="16" fill="var(--crt-body)"></rect>
+          <rect x="632" y="322" width="346" height="316" rx="16" fill="url(#bodyShade)"></rect>
+          <rect x="648" y="338" width="314" height="238" rx="12" fill="var(--crt-bezel)"></rect>
+          <rect x="664" y="354" width="282" height="206" rx="20" fill="url(#screenGlow)"></rect>
+          <g clip-path="url(#screenClip)">
+            <g class="crt-text" id="crt-text">
+              <text class="status" x="680" y="377">MALUTAN.SYS</text>
+              <text class="status" x="930" y="377" text-anchor="end">CH 01</text>
+            </g>
+            <rect x="664" y="354" width="282" height="206" fill="url(#scan)"></rect>
+            <rect x="664" y="354" width="282" height="206" fill="url(#screenVig)"></rect>
+            <rect class="crt-flicker" x="664" y="354" width="282" height="206" fill="#fff" opacity="0"></rect>
+            <path d="M676 366 Q 800 356 934 362 L 934 365 Q 800 360 676 372 Z" fill="#fff" opacity="0.09"></path>
+          </g>
+          <text x="652" y="603" font-family="monospace" font-size="11" letter-spacing="3" fill="var(--crt-label)"
+            >MALUTAN</text
+          >
+          <text x="958" y="603" text-anchor="end" font-family="monospace" font-size="11" font-style="italic" fill="var(--crt-label)"
+            >Toyvision</text
+          >
+          <circle cx="760" cy="614" r="4" fill="#57e389"></circle>
+          <circle cx="852" cy="614" r="8" fill="var(--crt-bezel)"></circle>
+          <circle cx="878" cy="614" r="8" fill="var(--crt-bezel)"></circle>
+          <circle cx="904" cy="614" r="8" fill="var(--crt-bezel)"></circle>
+        </g>
+      </a>
+      <!-- VCR under the monitor, clock shows the visitor's local time -->
+      <g aria-hidden="true">
+        <rect x="616" y="638" width="378" height="52" rx="6" fill="var(--crt-body-dark)"></rect>
+        <rect x="640" y="656" width="150" height="10" rx="3" fill="#000" opacity="0.35"></rect>
+        <rect x="868" y="650" width="98" height="28" rx="4" fill="#06110c"></rect>
+        <text id="clock" x="917" y="671" text-anchor="middle" font-family="monospace" font-size="19" fill="#4dffb0"
+          >23:06</text
+        >
+      </g>
+
+      <ellipse class="night-only" cx="805" cy="712" rx="250" ry="26" fill="url(#crtSpill)" opacity="0.7" pointer-events="none"></ellipse>
+      <rect class="night-only" x="1100" y="505" width="14" height="186" fill="#6f80ff" opacity="0.16" filter="url(#blur3)" pointer-events="none"></rect>
     </g>
 
     <rect width="1600" height="900" fill="url(#vignette)" pointer-events="none"></rect>
-    <rect width="1600" height="900" filter="url(#grain)" opacity="0.05" pointer-events="none"></rect>
+    <rect width="1600" height="900" filter="url(#grain)" opacity="0.22" style="mix-blend-mode: overlay" pointer-events="none"></rect>
   </svg>
 
   <p class="hero-hint">

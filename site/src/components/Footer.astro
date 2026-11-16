@@ -1,10 +1,12 @@
 ---
-// Cloudflare Pages sets this during the build; locally it is empty.
-const sha = (process.env.CF_PAGES_COMMIT_SHA ?? '').slice(0, 7);
+// Cloudflare sets one of these during the build; locally they are empty.
+const sha = (process.env.CF_PAGES_COMMIT_SHA ?? process.env.WORKERS_CI_COMMIT_SHA ?? '').slice(0, 7);
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  © {year} David Malutan · v1.0{sha && ` (${sha})`} · built with Astro, no trackers ·
-  <a href="/now">now</a> · <a href="/rss.xml">rss</a>
+  <span>© {year} David Malutan · Cluj-Napoca</span>
+  <span>
+    v1.0{sha && ` · ${sha}`} · no trackers · <a href="/now">now</a> · <a href="/rss.xml">rss</a>
+  </span>
 </footer>

@@ -13,8 +13,11 @@
   --wall: #1a1c25;
   --frame: #2a2622;
   --frame-dark: #1d1a17;
-  --sky-top: #060913;
-  --sky-bot: #1e2a4f;
+  --sky-top: #04060d;
+  --sky-mid: #111a38;
+  --sky-bot: #3a2d4c;
+  --frame-lit: #7a5a3c;
+  --desk-lit: #6b4a30;
   --hill: #131829;
   --city: #0b0e18;
   --window-lit: #ffcf7a;
@@ -54,8 +57,11 @@
   --wall: #dccdb5;
   --frame: #f1e9da;
   --frame-dark: #d3c4ab;
-  --sky-top: #86bde6;
-  --sky-bot: #f5dcb5;
+  --sky-top: #7fb6e2;
+  --sky-mid: #b9d8ee;
+  --sky-bot: #f6e0bb;
+  --frame-lit: #f6efe2;
+  --desk-lit: #b98b62;
   --hill: #9fb3a2;
   --city: #7f8b99;
   --curtain: #eadbc7;
@@ -68,13 +74,14 @@
   --crt-body-dark: #c8c0b1;
   --crt-label: #6b6456;
   --key: #b3ab9c;
+  --mug: #4f6478;
 
   color-scheme: light;
 }
 
 :root {
   --font-display: 'Archivo', system-ui, sans-serif;
-  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-body: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  --measure: 720px;
+  --measure: 1000px;
 }
