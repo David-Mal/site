@@ -290,6 +290,18 @@ kbd {
   transform: translateX(-10px);
 }
 
+/* the dial turns when you reach for the phone */
+.dial {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.6s cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+.phone:hover .dial,
+.phone:focus-visible .dial {
+  transform: rotate(150deg);
+}
+
 .night-only {
   transition: opacity 0.45s ease;
 }
